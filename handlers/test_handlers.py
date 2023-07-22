@@ -9,6 +9,7 @@ from filters.admin_filter import IsAdmin
 router: Router = Router()
 u_rep: Users = Users()
 
+
 @router.message(Command("delete"), IsAdmin())
 async def delete_user(message: Message):
     u_rep.delete_user(int(message.from_user.id))
