@@ -56,25 +56,35 @@ async def show_own_theory_chosen(callback: CallbackQuery, state: FSMContext):
     print(callback.json())
     type = callback.data.split("_")[-1]
     #todo чтобы умело работать с другими страницами
+
     result = m_rep.get_own_materials(r_count=RECORDS_COUNT,
                             type=type,
                             telegram_id=callback.from_user.id)
     answer = get_tg_list_from_tuple(materials=result,
                                     r_count=RECORDS_COUNT)
-    state = m_rep.count_user_material(type=type,
-                                      telegram_id=callback.from_user.id) > 10
-    if state:
-        if p_rep.exists(callback.from_user.id):
-            page = int(p_rep.get(callback.from_user.id))
+    if len(result) > 0:
+        state = m_rep.count_user_material(type=type,
+                                          telegram_id=callback.from_user.id) > 10
+        if state:
+            if p_rep.exists(key=callback.from_user.id,
+                            type=type):
+                page = int(p_rep.get(key=callback.from_user.id,
+                                     type=type))
+            else:
+                p_rep.add(key=callback.from_user.id,
+                          type=type,
+                          value=1)
+                page = 1
         else:
-            p_rep.add(callback.from_user.id, 1)
-            page = 1
-    else:
-        page = None
-    await callback.message.answer(text=f"{answer}",
-                                  reply_markup=navigate_theory_kb(state=state,
-                                                                  page=page))
-    await callback.answer()
+            page = None
+        p_rep.add(key=callback.from_user.id,
+                  type=type,
+                  value=1)
+        await callback.message.answer(text=f"{answer}",
+                                      reply_markup=navigate_theory_kb(state=state,
+                                                                      page=page))
+        await callback.answer()
+    await callback.answer("Ничего еще не добавлено")
 
 
 @router.callback_query(Text("show_own_text"))
@@ -85,18 +95,33 @@ async def show_own_text_chosen(callback: CallbackQuery, state: FSMContext):
     result = m_rep.get_own_materials(r_count=RECORDS_COUNT,
                                      type=type,
                                      telegram_id=callback.from_user.id)
-    answer = get_tg_list_from_tuple(materials=result,
-                                    r_count=RECORDS_COUNT)
-    state = m_rep.count_user_material(type=type,
-                                      telegram_id=callback.from_user.id) > 10
-    page = 1
-    p_rep.add(callback.from_user.id, 1)
-    print(result)
-    print(state)
-    await callback.message.answer(text=f"{answer}",
-                                  reply_markup=navigate_text_kb(state=state,
-                                                                page=page))
-    await callback.answer()
+    if len(result) > 0:
+        answer = get_tg_list_from_tuple(materials=result,
+                                        r_count=RECORDS_COUNT)
+        state = m_rep.count_user_material(type=type,
+                                          telegram_id=callback.from_user.id) > 10
+        if state:
+            if p_rep.exists(key=callback.from_user.id,
+                            type=type):
+                page = int(p_rep.get(key=callback.from_user.id,
+                                     type=type))
+            else:
+                p_rep.add(key=callback.from_user.id,
+                          type=type,
+                          value=1)
+                page = 1
+        else:
+            page = None
+        p_rep.add(key=callback.from_user.id,
+                  type=type,
+                  value=1)
+        print(result)
+        print(state)
+        await callback.message.answer(text=f"{answer}",
+                                      reply_markup=navigate_text_kb(state=state,
+                                                                    page=page))
+        await callback.answer()
+    await callback.answer("Ничего еще не добавлено")
 
 
 @router.message(FSMActionStates.new_material)
