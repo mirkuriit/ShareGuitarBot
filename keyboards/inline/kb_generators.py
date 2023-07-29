@@ -1,6 +1,6 @@
 from aiogram.types import InlineKeyboardMarkup
-from aiogram.utils.keyboard import InlineKeyboardBuilder
-from aiogram.utils.keyboard import InlineKeyboardButton
+from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
+from aiogram.utils.keyboard import InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
 
 from lexicon.lexicon import WELCOME_TTT
 
@@ -15,7 +15,7 @@ def csd_kb(type: str) -> InlineKeyboardMarkup | None:
     if _is_correct_type(type):
         kb_builder: InlineKeyboardBuilder = InlineKeyboardBuilder()
         buttons: list[InlineKeyboardButton] = [
-            InlineKeyboardButton(text=WELCOME_TTT["show_own"], callback_data=f"show_own_{type}"),
+            InlineKeyboardButton(text=WELCOME_TTT["show_own"], callback_data=f"show_own_{type}",),
             InlineKeyboardButton(text=WELCOME_TTT["show_public"], callback_data=f"show_public_{type}"),
             InlineKeyboardButton(text=WELCOME_TTT["add"], callback_data=f"add_{type}"),
             InlineKeyboardButton(text=WELCOME_TTT["delete"], callback_data=f"delete_{type}")
@@ -24,6 +24,15 @@ def csd_kb(type: str) -> InlineKeyboardMarkup | None:
     # todo добвить собственные ошибки в случае, если тип некорректный
     return None
 
+"""
+def secret_kb() -> ReplyKeyboardMarkup:
+    kb_builder: ReplyKeyboardBuilder = ReplyKeyboardBuilder()
+    kb_builder.row(
+        KeyboardButton(text="Пасхалка", request_location=True),
+        KeyboardButton(text="Pashalka", request_contact=True)
+    )
+    return kb_builder.as_markup()
+"""
 
 def navigate_kb(state: bool, type: str, page: str | int = "(-)") -> InlineKeyboardMarkup | None:
     kb_builder: InlineKeyboardBuilder = InlineKeyboardBuilder()

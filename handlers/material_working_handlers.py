@@ -22,15 +22,8 @@ p_rep: PagesRepository = PagesRepository()
 RECORDS_COUNT = 10
 
 
-@router.callback_query(Text("add_theory"))
-async def add_theory_chosen(callback: CallbackQuery, state: FSMContext):
-    await state.set_state(FSMActionStates.new_material)
-    await state.update_data(type=get_actual_type(callback=callback))
-    await callback.message.answer("Скиньте ссылку")
-    await callback.answer()
-
-
-@router.callback_query(Text("add_text"))
+@router.callback_query(ShowTextTheoryFilter(
+    updates=["add_text", "add_theory"]))
 async def add_text_chosen(callback: CallbackQuery, state: FSMContext):
     await state.set_state(FSMActionStates.new_material)
     await state.update_data(type=get_actual_type(callback=callback))
@@ -38,16 +31,9 @@ async def add_text_chosen(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
 
 
-@router.callback_query(Text("delete_theory"))
-async def delete_theory_chosen(callback: CallbackQuery, state: FSMContext):
-    await state.set_state(FSMActionStates.delete_material)
-    await state.update_data(type=get_actual_type(callback=callback))
-    await callback.message.answer("Отправьте номер заметки, которую вы бы хотели удалить")
-    await callback.answer()
-
-
-@router.callback_query(Text("delete_text"))
-async def delete_text_chosen(callback: CallbackQuery, state: FSMContext):
+@router.callback_query(ShowTextTheoryFilter(
+    updates=["delete_text", "delete_theory"]))
+async def delete_material_chosen(callback: CallbackQuery, state: FSMContext):
     await state.set_state(FSMActionStates.delete_material)
     await state.update_data(type=get_actual_type(callback=callback))
     await callback.message.answer("Отправьте номер заметки, которую вы бы хотели удалить")
@@ -55,7 +41,7 @@ async def delete_text_chosen(callback: CallbackQuery, state: FSMContext):
 
 
 @router.callback_query(ShowTextTheoryFilter(
-    updates=["show_own_text", "show_own_theory", "show_own_tabs", "show_own_files"]))
+    updates=["show_own_text", "show_own_theory"]))
 async def show_own_material(callback: CallbackQuery, state: FSMContext):
     await state.set_state(FSMActionStates.show_own_material)
     print(callback.json())

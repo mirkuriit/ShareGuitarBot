@@ -61,7 +61,6 @@ async def move_right_chosen(callback: CallbackQuery, state:FSMContext):
 @router.callback_query(MovingFilter(
     updates=["move_left_text", "move_left_theory", "move_left_tabs", "move_left_file"]))
 async def move_left_chosen(callback: CallbackQuery, state:FSMContext):
-    # todo Вынести получение типа в отдельню функцию
     type = get_actual_type(callback=callback)
     page = get_actual_page(telegram_id=callback.from_user.id,
                            type=type,
